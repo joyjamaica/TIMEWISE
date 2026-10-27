@@ -1,0 +1,194 @@
+:root {
+    --espresso: #3E2522;
+    --espresso-dark: #2A1816;
+    --taupe: #8C6E63;
+    --sand: #D3A376;
+    --cream: #FFE0B2;
+    --offwhite: #FFF2DF;
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: var(--espresso);
+}
+
+/* --- Left Dark Panel --- */
+.hero-panel {
+    background: 
+        radial-gradient(circle at 85% 15%, rgba(211, 163, 118, 0.22) 0%, transparent 50%),
+        radial-gradient(circle at 15% 85%, rgba(140, 110, 99, 0.25) 0%, transparent 50%),
+        linear-gradient(145deg, var(--espresso) 0%, var(--espresso-dark) 100%);
+    color: var(--offwhite);
+    position: relative;
+}
+
+/* Mini Logo Badge */
+.mini-logo {
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: -0.5px;
+    color: var(--offwhite);
+}
+
+.mini-logo .accent-dot {
+    color: var(--sand);
+}
+
+/* Left Hero Branding Text */
+.brand-title {
+    color: var(--offwhite);
+    font-size: 5rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    line-height: 1;
+}
+
+.brand-tagline {
+    color: var(--sand);
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    line-height: 1.5;
+}
+
+/* Bottom Footer Notice */
+.hero-footer {
+    color: var(--taupe);
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+/* --- Right Panel --- */
+.form-panel {
+    background: linear-gradient(135deg, var(--offwhite) 0%, #F8EAD9 50%, var(--cream) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.form-panel::before {
+    content: "";
+    position: absolute;
+    width: 380px;
+    height: 380px;
+    background: rgba(211, 163, 118, 0.18);
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+}
+
+/* Auth Card */
+.card.auth-card {
+    background-color: #ffffff;
+    border: 1px solid rgba(211, 163, 118, 0.4) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 15px 35px rgba(62, 37, 34, 0.07) !important;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+/* Standard Form Input */
+.auth-card .form-control {
+    border: 1px solid var(--sand);
+    border-radius: 8px !important;
+    padding: 0.6rem 0.9rem;
+}
+
+.auth-card .form-control:focus {
+    border-color: var(--espresso);
+    box-shadow: 0 0 0 0.2rem rgba(62, 37, 34, 0.12);
+}
+
+/* --- Seamless Password Input Field --- */
+.input-group-seamless {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid var(--sand);
+    border-radius: 8px !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.input-group-seamless:focus-within {
+    border-color: var(--espresso) !important;
+    box-shadow: 0 0 0 0.2rem rgba(62, 37, 34, 0.12);
+}
+
+.input-group-seamless .form-control {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding-right: 0.5rem;
+}
+
+.input-group-seamless .btn-toggle-eye {
+    border: none !important;
+    background: transparent !important;
+    color: var(--taupe);
+    padding: 0 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.input-group-seamless .btn-toggle-eye:hover {
+    color: var(--espresso);
+}
+
+.input-group-seamless .btn-toggle-eye:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Primary Action Button */
+.btn-espresso {
+    background-color: var(--espresso);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px !important;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 0.7rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.btn-espresso:hover {
+    background-color: var(--espresso-dark);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.text-taupe {
+    color: var(--taupe);
+}
+
+.text-espresso {
+    color: var(--espresso);
+}
+
+/* Footer Link Accent */
+.auth-footer-text {
+    color: var(--taupe);
+}
+
+.auth-action-link {
+    color: var(--espresso);
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.auth-action-link:hover {
+    color: var(--sand);
+}
+
+/* Backdrop Blur for Success Modal */
+.modal-backdrop.show {
+    opacity: 0.4;
+    backdrop-filter: blur(4px);
+}
