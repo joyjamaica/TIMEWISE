@@ -192,3 +192,19 @@ body, html {
     opacity: 0.4;
     backdrop-filter: blur(4px);
 }
+
+.google-login-btn {
+    background-color: #ffffff;
+    color: #3c4043;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.google-login-btn:hover {
+    background-color: #f8faff;
+    color: #3c4043;
+    border-color: #d2e3fc;
+    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.2);
+}
