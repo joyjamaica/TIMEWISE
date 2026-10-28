@@ -29,6 +29,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/collaborate', function () {
+    return view('collaborate.index', [
+        'teams' => collect(),
+    ]);
+})->name('collaborate.index');
+
 require __DIR__.'/auth.php';
 
 Route::get('/auth/google', [
