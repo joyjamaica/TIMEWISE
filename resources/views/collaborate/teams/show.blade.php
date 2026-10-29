@@ -30,7 +30,7 @@
 
     <div class="clb-layout">
         <div class="clb-board">
-            @foreach (\App\Models\Task::STATUSES as $status => $label)
+            @foreach (\App\Models\TeamTask::STATUSES as $status => $label)
                 @php $col = $tasks->get($status, collect()); @endphp
                 <section class="clb-col">
                     <header><h3>{{ $label }}</h3><span class="clb-count">{{ $col->count() }}</span></header>
@@ -110,7 +110,7 @@
             <label>Due date <input type="date" name="due_date" id="t-due" value="{{ old('due_date') }}"></label>
             <label>Status
                 <select name="status" id="t-status">
-                    @foreach (\App\Models\Task::STATUSES as $v => $l)<option value="{{ $v }}">{{ $l }}</option>@endforeach
+                    @foreach (\App\Models\TeamTask::STATUSES as $v => $l)<option value="{{ $v }}">{{ $l }}</option>@endforeach
                 </select>
             </label>
         </div>

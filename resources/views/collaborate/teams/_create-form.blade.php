@@ -1,4 +1,4 @@
-<form method="POST" action="#" class="clb-form">
+<form method="POST" action="{{ route('collaborate.teams.store') }}" class="clb-form">
     @csrf
     <label>Team name
         <input type="text" name="name" value="{{ old('name') }}" maxlength="100" required>

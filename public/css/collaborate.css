@@ -21,11 +21,44 @@
 .clb-back:hover { text-decoration: underline; }
 
 .clb-btn { border: 1px solid transparent; border-radius: 14px; padding: 11px 20px; font: inherit; font-weight: 600; cursor: pointer; }
-.clb-btn--dark { background: var(--clb-dark); color: #fff; box-shadow: 0 10px 24px rgba(46,34,29,.22); }
-.clb-btn--dark:hover { background: #45342c; }
-.clb-btn--ghost { background: var(--clb-surface); color: var(--clb-ink); border-color: var(--clb-line); }
-.clb-btn--ghost:hover { background: var(--clb-col); }
-.clb-btn--lg { padding: 16px 26px; border-radius: 18px; }
+.clb-btn {
+  border: 1px solid transparent;
+  border-radius: 14px;
+  padding: 11px 20px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.clb .clb-btn--dark,
+.clb-dialog .clb-btn--dark {
+  background: #2e221d;
+  color: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(46, 34, 29, .22);
+}
+
+.clb .clb-btn--dark:hover,
+.clb-dialog .clb-btn--dark:hover {
+  background: #45342c;
+  color: #ffffff !important;
+}
+
+.clb .clb-btn--ghost {
+  background: #fffaf5;
+  color: #2e221d !important;
+  border-color: #e9d9c8;
+}
+
+.clb .clb-btn--ghost:hover {
+  background: #f5e9dd;
+}
+
+.clb-btn--lg {
+  padding: 16px 26px;
+  border-radius: 18px;
+}
+
 .clb button:focus-visible, .clb a:focus-visible, .clb input:focus-visible, .clb select:focus-visible, .clb textarea:focus-visible,
 .clb-dialog :focus-visible { outline: 2px solid var(--clb-brown); outline-offset: 2px; }
 

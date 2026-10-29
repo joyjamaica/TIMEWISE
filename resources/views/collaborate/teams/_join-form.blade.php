@@ -1,4 +1,4 @@
-<form method="POST" action="#" class="clb-form">
+<form method="POST" action="{{ route('collaborate.teams.join.store') }}" class="clb-form">
     @csrf
     <label>Invitation code
         <input type="text" name="invite_code" value="{{ old('invite_code') }}" maxlength="12"

@@ -46,3 +46,5 @@ Route::get('/auth/google/callback', [
     GoogleController::class,
     'handleGoogleCallback'
 ])->name('google.callback');
+
+require __DIR__.'/collaborate.php';
