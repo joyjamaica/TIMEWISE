@@ -23,8 +23,8 @@
         [
             'label' => 'Tasks / Matrix',
             'icon' => 'tasks',
-            'routes' => ['tasks.index', 'tasks', 'matrix.index'],
-            'active' => ['tasks*', 'matrix*'],
+            'routes' => ['matrix.index'],
+             'active' => ['matrix*'],
         ],
         [
             'label' => 'Calendar',
