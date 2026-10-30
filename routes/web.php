@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\MatrixController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -48,3 +49,14 @@ Route::get('/auth/google/callback', [
 ])->name('google.callback');
 
 require __DIR__.'/collaborate.php';
+
+// Route to view the Matrix page
+Route::get('/matrix', [MatrixController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('matrix.index');
+
+// Route to save a new task
+Route::post('/tasks', [MatrixController::class, 'store'])->name('tasks.store');
+
+Route::put('/tasks/{id}', [MatrixController::class, 'update'])->name('tasks.update');
+Route::patch('/tasks/{id}/complete', [MatrixController::class, 'toggleComplete'])->name('tasks.complete');
