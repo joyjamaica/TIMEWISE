@@ -3,7 +3,6 @@
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/collaborate.css') }}">
 <div class="clb">
-    <a class="clb-back" href="{{ route('collaborate.index') }}">Back to Collaborate</a>
 
     <header class="clb-head">
         <div>
