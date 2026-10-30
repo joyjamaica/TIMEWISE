@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\MatrixController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PulseBotController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -56,7 +57,15 @@ Route::get('/matrix', [MatrixController::class, 'index'])
     ->name('matrix.index');
 
 // Route to save a new task
-Route::post('/tasks', [MatrixController::class, 'store'])->name('tasks.store');
+Route::middleware('auth')->group(function () {
+    Route::post('/tasks', [MatrixController::class, 'store'])->name('tasks.store');
+    Route::put('/tasks/{id}', [MatrixController::class, 'update'])->name('tasks.update');
+    Route::patch('/tasks/{id}/complete', [MatrixController::class, 'toggleComplete'])->name('tasks.complete');
+});
 
-Route::put('/tasks/{id}', [MatrixController::class, 'update'])->name('tasks.update');
-Route::patch('/tasks/{id}/complete', [MatrixController::class, 'toggleComplete'])->name('tasks.complete');
+// PulseBot AI assistant
+Route::middleware(['auth', 'verified'])->prefix('pulsebot')->name('pulsebot.')->group(function () {
+    Route::get('/', [PulseBotController::class, 'index'])->name('index');
+    Route::post('/send', [PulseBotController::class, 'send'])->middleware('throttle:10,1')->name('send');
+    Route::post('/clear', [PulseBotController::class, 'clear'])->name('clear');
+});
