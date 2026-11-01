@@ -287,12 +287,25 @@
     font: inherit;
     text-align: left;
 
-    cursor: default;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color .15s ease;
+}
+
+.tw-profile-btn:hover {
+    background: rgba(255, 255, 255, .06);
+}
+
+.tw-profile-btn:focus-visible {
+    outline: 2px solid var(--tw-side-peach);
+    outline-offset: 2px;
 }
 
 .tw-avatar {
     display: grid;
     place-items: center;
+    overflow: hidden;
 
     flex-shrink: 0;
 
@@ -306,6 +319,12 @@
 
     font-size: 12px;
     font-weight: 700;
+}
+
+.tw-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .tw-profile-text {
