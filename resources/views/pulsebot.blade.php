@@ -13,7 +13,7 @@
     <div class="pb-grid">
         <aside class="pb-prompts" aria-label="Quick prompts">
             @foreach ([
-                ['✦', 'Summarize my notes', "Summarize my notes. I'll paste them next."],
+                ['✦', 'Summarize my notes', "Summarize my notes. I'll paste them next, or attach a PDF, TXT, Markdown, or CSV file. Highlight the key ideas and end by asking if I'd like a quiz."],
                 ['?', 'Explain this simply', 'Explain this simply: '],
                 ['✓', 'Create a practice quiz', 'Create a short practice quiz on this topic: '],
                 ['↗', 'Break down an assignment', 'Break down this assignment into smaller steps with a realistic schedule: ']
@@ -35,12 +35,18 @@
             </div>
 
             <div class="pb-log" id="pb-log" role="log" aria-live="polite">
-                <div class="pb-typing" id="pb-typing" aria-label="PulseBot is typing">
+                <div class="pb-typing" id="pb-typing" role="status" aria-label="PulseBot is responding">
+                    <span>PulseBot is thinking</span>
                     <i></i><i></i><i></i>
                 </div>
             </div>
 
             <form class="pb-form" id="pb-form" autocomplete="off">
+                <input class="pb-file-input" id="pb-file" type="file" accept=".pdf,.txt,.md,.csv,application/pdf,text/plain,text/markdown,text/csv">
+                <button class="pb-attach" id="pb-attach" type="button" aria-label="Attach notes file" title="Attach a PDF, TXT, Markdown, or CSV file">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.4 11.1 12 20.5a6 6 0 0 1-8.5-8.5l9.9-9.9a4 4 0 0 1 5.7 5.7l-10 10a2 2 0 0 1-2.8-2.8l9.2-9.2"/></svg>
+                </button>
+                <span class="pb-file-name" id="pb-file-name" aria-live="polite"></span>
                 <textarea class="pb-input" id="pb-input" rows="1" maxlength="1000"
                     placeholder="Ask PulseBot anything…" aria-label="Message"></textarea>
                 <button class="pb-send" id="pb-send" type="submit" aria-label="Send message">
@@ -69,7 +75,8 @@
     const $ = id => document.getElementById(id);
     const log = $('pb-log'), typing = $('pb-typing'), form = $('pb-form');
     const input = $('pb-input'), send = $('pb-send'), status = $('pb-status');
-    const clear = $('pb-clear');
+    const clear = $('pb-clear'), fileInput = $('pb-file'), attach = $('pb-attach');
+    const fileName = $('pb-file-name');
 
     let busy = false;
     let history = @json($chatHistory);
@@ -106,6 +113,7 @@
         else message.textContent = text;
         log.insertBefore(message, typing);
         log.scrollTop = log.scrollHeight;
+        return message;
     }
 
     function loadHistory() {
@@ -123,38 +131,39 @@
     function setBusy(value) {
         busy = value;
         send.disabled = value;
+        attach.disabled = value;
+        fileInput.disabled = value;
         typing.classList.toggle('on', value);
         if (value) log.scrollTop = log.scrollHeight;
     }
 
     async function submit(text) {
         text = text.trim();
-        if (!text || busy) return;
+        const file = fileInput.files[0] || null;
+        if ((!text && !file) || busy) return;
 
-        add('me', text);
+        add('me', text + (file ? `\n📎 ${file.name}` : ''));
         input.value = '';
         input.style.height = 'auto';
         setBusy(true);
 
         try {
+            const body = new FormData();
+            body.append('message', text);
+            if (file) body.append('file', file);
+
             const res = await fetch(SEND_URL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': CSRF,
                     'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: JSON.stringify({ message: text })
+                body
             });
 
-            const data = await res.json().catch(() => ({}));
-
-            if (res.ok && data.reply) {
-                add('bot', data.reply);
-                status.textContent = 'Online · Ready to help';
-                status.dataset.off = '';
-            } else {
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
                 add('err', res.status === 429
                     ? 'You are sending messages too fast. Wait a few seconds and try again.'
                     : res.status === 419
@@ -165,9 +174,73 @@
                     status.textContent = 'Offline · Try again later';
                     status.dataset.off = '1';
                 }
+                return;
+            }
+
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+            let reply = '';
+            let message = null;
+            let completed = false;
+            let failed = false;
+
+            const processEvent = event => {
+                const line = event.split(/\r?\n/).find(part => part.startsWith('data:'));
+                if (!line) return;
+
+                const data = JSON.parse(line.slice(5).trim());
+                if (data.error) {
+                    add('err', data.error);
+                    failed = true;
+                    return;
+                }
+
+                if (typeof data.token === 'string') {
+                    typing.classList.remove('on');
+                    reply += data.token;
+                    if (!message) message = add('bot', '');
+                    message.innerHTML = render(reply);
+                    log.scrollTop = log.scrollHeight;
+                }
+
+                if (data.done) {
+                    completed = true;
+                    if (typeof data.reply === 'string') {
+                        reply = data.reply;
+                        if (!message) message = add('bot', '');
+                        message.innerHTML = render(reply);
+                        log.scrollTop = log.scrollHeight;
+                    }
+                }
+            };
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const events = buffer.split(/\r?\n\r?\n/);
+                buffer = events.pop();
+                events.forEach(processEvent);
+            }
+
+            buffer += decoder.decode();
+            if (buffer.trim()) processEvent(buffer);
+            if (!completed && !failed) throw new Error('PulseBot disconnected before finishing the response.');
+
+            if (failed) {
+                status.textContent = 'Offline · Try again later';
+                status.dataset.off = '1';
+            } else {
+                status.textContent = 'Online · Ready to help';
+                status.dataset.off = '';
+                fileInput.value = '';
+                fileName.textContent = '';
+                attach.title = 'Attach a PDF, TXT, Markdown, or CSV file';
             }
         } catch {
-            add('err', 'Could not reach the server. Check your connection and try again.');
+            add('err', 'Could not complete the response. Check your connection and try again.');
         } finally {
             setBusy(false);
             input.focus();
@@ -191,6 +264,13 @@
     input.addEventListener('input', () => {
         input.style.height = 'auto';
         input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+    });
+
+    attach.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        attach.title = file ? `Attached: ${file.name}` : 'Attach a PDF, TXT, Markdown, or CSV file';
+        fileName.textContent = file ? file.name : '';
     });
 
     document.querySelectorAll('.pb-prompt').forEach(button => {
