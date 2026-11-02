@@ -15,6 +15,7 @@
 
     <!-- Navigation Stylesheet -->
     <link rel="stylesheet" href="{{ asset('css/navigation.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/page-motion.css') }}">
 
     {{-- Each page adds its own stylesheet here with @push('styles') --}}
     @stack('styles')
@@ -69,6 +70,7 @@
     </div>
 
     <script src="{{ asset('js/navigation.js') }}" defer></script>
+    <script src="{{ asset('js/page-motion.js') }}" defer></script>
 
 </body>
 </html>

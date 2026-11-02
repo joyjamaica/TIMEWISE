@@ -1,0 +1,106 @@
+.tw-motion-target {
+    transition:
+        opacity 520ms cubic-bezier(.2, .7, .2, 1),
+        transform 520ms cubic-bezier(.2, .7, .2, 1);
+    transition-delay: var(--tw-motion-delay, 0ms);
+}
+
+.tw-motion-ready .tw-motion-target:not(.is-visible) {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+}
+
+.tw-motion-ready .tw-motion-target.is-visible:not(:hover) {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+}
+
+.tw-nav-link,
+.tw-brand-mark,
+.tw-logout-btn,
+.tw-topbar-btn,
+.matrix-btn,
+.clb-btn,
+.pb-prompt,
+.pb-attach,
+.pb-send,
+.tw-app-content main .inline-flex.items-center,
+.clb-team,
+.clb-col,
+.clb-panel,
+.matrix-cell,
+.matrix-form-card,
+.tw-app-content main .bg-white.shadow,
+.tw-app-content main .bg-white.shadow-sm {
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease,
+        border-color 180ms ease,
+        background-color 180ms ease,
+        color 180ms ease;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .tw-nav-link:not(.is-disabled):hover {
+        transform: translateX(3px);
+    }
+
+    .tw-brand:hover .tw-brand-mark {
+        transform: translateY(-2px) rotate(-3deg);
+    }
+
+    .tw-logout-btn:hover,
+    .tw-topbar-btn:hover,
+    .matrix-btn:hover,
+    .clb-btn:hover,
+    .pb-attach:hover,
+    .pb-send:not(:disabled):hover,
+    .tw-app-content main .inline-flex.items-center:hover {
+        transform: translateY(-2px);
+        transition-delay: 0ms;
+    }
+
+    .clb-team:hover,
+    .clb-col:hover,
+    .clb-panel:hover,
+    .matrix-cell:hover,
+    .matrix-form-card:hover,
+    .tw-app-content main .bg-white.shadow:hover,
+    .tw-app-content main .bg-white.shadow-sm:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 34px rgba(58, 42, 33, .1);
+    }
+
+    .pb-prompt:hover {
+        transform: translateX(3px);
+        transition-delay: 0ms;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tw-motion-target,
+    .tw-nav-link,
+    .tw-brand-mark,
+    .tw-logout-btn,
+    .tw-topbar-btn,
+    .matrix-btn,
+    .clb-btn,
+    .pb-prompt,
+    .pb-attach,
+    .pb-send,
+    .tw-app-content main .inline-flex.items-center,
+    .clb-team,
+    .clb-col,
+    .clb-panel,
+    .matrix-cell,
+    .matrix-form-card,
+    .tw-app-content main .bg-white.shadow,
+    .tw-app-content main .bg-white.shadow-sm {
+        transition: none !important;
+        transform: none !important;
+    }
+
+    .tw-motion-ready .tw-motion-target:not(.is-visible) {
+        opacity: 1;
+    }
+}
