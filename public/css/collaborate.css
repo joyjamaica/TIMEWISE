@@ -91,7 +91,8 @@
 .clb-stack { display: inline-flex; }
 .clb-stack .clb-avatar + .clb-avatar { margin-left: -8px; }
 .clb-avatar { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%;
-  background: #7d5a4a; color: #fff; font-size: 11px; font-weight: 700; border: 2px solid var(--clb-bg); flex: none; }
+  background: #7d5a4a; color: #fff; font-size: 11px; font-weight: 700; border: 2px solid var(--clb-bg); flex: none; overflow: hidden; }
+.clb-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .clb-avatar--sm { width: 26px; height: 26px; font-size: 9px; }
 .clb-avatar--lg { width: 40px; height: 40px; }
 .clb-avatar--empty { background: var(--clb-line); color: var(--clb-muted); }

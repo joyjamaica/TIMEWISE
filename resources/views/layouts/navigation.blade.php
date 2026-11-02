@@ -151,16 +151,20 @@
         {{-- User Profile --}}
         <div class="tw-profile">
 
-         <div class="tw-profile-btn">
+         <a href="{{ route('profile.edit') }}" class="tw-profile-btn" title="Edit profile">
         <span class="tw-avatar" aria-hidden="true">
-            {{ $initials }}
+            @if ($user?->profile_photo_path)
+                <img src="{{ asset('storage/'.$user->profile_photo_path) }}" alt="">
+            @else
+                {{ $initials }}
+            @endif
         </span>
 
         <span class="tw-profile-text">
             <span class="tw-profile-name">{{ $name }}</span>
             <span class="tw-profile-sub">{{ $email }}</span>
             </span>
-         </div>
+         </a>
 
     {{-- Logout Button --}}
     <form method="POST" action="{{ route('logout') }}">
