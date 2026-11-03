@@ -66,10 +66,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/tasks/{id}/complete', [MatrixController::class, 'toggleComplete'])->name('tasks.complete');
 });
 
-// PulseBot AI assistant
+// PulseBot AI assistant routes
 Route::middleware(['auth', 'verified'])->prefix('pulsebot')->name('pulsebot.')->group(function () {
     Route::get('/', [PulseBotController::class, 'index'])->name('index');
-    Route::post('/send', [PulseBotController::class, 'send'])->middleware('throttle:10,1')->name('send');
+    Route::post('/send', [PulseBotController::class, 'send'])->name('send');
     Route::post('/clear', [PulseBotController::class, 'clear'])->name('clear');
 });
 
