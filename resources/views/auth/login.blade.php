@@ -13,8 +13,92 @@
 
     <!-- Custom Auth Stylesheet -->
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}?v=3.9">
+
+    <!-- Custom Cube Loading Animation Styles -->
+    <style>
+        /* Full-Screen Dark Translucent Overlay */
+        #loadingOverlay {
+            background-color: rgba(26, 18, 11, 0.85); /* Dark espresso theme backdrop */
+            backdrop-filter: blur(4px);
+            transition: opacity 0.3s ease-in-out;
+            z-index: 9999;
+        }
+
+        /* Circular Orbital Track Container */
+        .cube-loader-wrapper {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Faint Circular Orbit Line */
+        .cube-loader-wrapper::before {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border: 2px dashed rgba(213, 206, 163, 0.3); /* Taupe accent ring */
+            border-radius: 50%;
+        }
+
+        /* Rotating Orbit Frame */
+        .orbit-container {
+            width: 70px;
+            height: 70px;
+            position: absolute;
+            animation: orbitRotate 1.6s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+
+        /* The Cube moving in a circular path */
+        .moving-cube {
+            width: 20px;
+            height: 20px;
+            background-color: #d5cea3; /* Taupe accent color */
+            border-radius: 4px;
+            position: absolute;
+            top: -10px;
+            left: calc(50% - 10px);
+            box-shadow: 0 0 15px rgba(213, 206, 163, 0.8);
+            animation: cubeSelfSpin 1.6s ease-in-out infinite;
+        }
+
+        /* Keyframes for circular orbital motion */
+        @keyframes orbitRotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Keyframes for cube rotation and pulse scaling */
+        @keyframes cubeSelfSpin {
+            0%, 100% {
+                transform: rotate(0deg) scale(1);
+            }
+            50% {
+                transform: rotate(180deg) scale(1.25);
+                background-color: #3c2a21; /* Espresso highlight */
+                box-shadow: 0 0 20px rgba(213, 206, 163, 1);
+            }
+        }
+    </style>
 </head>
 <body>
+
+    <!-- Circular Cube Loading Overlay -->
+    <div id="loadingOverlay" class="d-none position-fixed top-0 start-0 w-100 h-100 flex-column align-items-center justify-content-center">
+        <div class="cube-loader-wrapper mb-3">
+            <div class="orbit-container">
+                <div class="moving-cube"></div>
+            </div>
+        </div>
+        <div class="text-light fw-semibold text-uppercase small tracking-wider">Signing In...</div>
+    </div>
 
     <div class="container-fluid p-0 vh-100">
         <div class="row g-0 h-100">
@@ -64,7 +148,7 @@
                             @endif
 
                             <!-- Login Form -->
-                            <form method="POST" action="{{ route('login') }}">
+                            <form method="POST" action="{{ route('login') }}" id="loginForm">
                                 @csrf
 
                                 <!-- Email -->
@@ -133,20 +217,21 @@
                                 </button>
                             </form>
 
-                        <!-- Continue with Google -->
-                          <div class="mt-3">
-                             <a href="{{ route('google.login') }}"
-                                class="google-login-btn w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2">
+                            <!-- Continue with Google -->
+                            <div class="mt-3">
+                                <a href="{{ route('google.login') }}"
+                                   id="googleBtn"
+                                   class="google-login-btn w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2">
 
-                             <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
-                             <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                             <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.74 7.18l7.65 5.93c4.47-4.13 7.13-10.2 7.13-17.58z"/>
-                             <path fill="#FBBC05" d="M10.53 28.59A14.5 14.5 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.52 2.56 10.78l7.97-6.19z"/>
-                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.87l-7.65-5.93c-2.13 1.43-4.89 2.28-8.26 2.28-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                             </svg>
+                                    <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+                                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.74 7.18l7.65 5.93c4.47-4.13 7.13-10.2 7.13-17.58z"/>
+                                        <path fill="#FBBC05" d="M10.53 28.59A14.5 14.5 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.52 2.56 10.78l7.97-6.19z"/>
+                                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.87l-7.65-5.93c-2.13 1.43-4.89 2.28-8.26 2.28-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                                    </svg>
 
-                                Continue with Google
-                              </a>
+                                    Continue with Google
+                                </a>
                             </div>
 
                             <!-- Registration Link -->
@@ -212,6 +297,47 @@
                 toggleIcon.classList.remove('bi-eye-slash');
                 toggleIcon.classList.add('bi-eye');
             }
+        }
+
+        // Handle delayed loading animation trigger (1 second delay)
+        const loginForm = document.getElementById('loginForm');
+        const googleBtn = document.getElementById('googleBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        let isSubmitting = false;
+
+        if (loginForm) {
+            loginForm.addEventListener('submit', function (e) {
+                if (!isSubmitting) {
+                    e.preventDefault();
+                    isSubmitting = true;
+
+                    // Display loading overlay
+                    loadingOverlay.classList.remove('d-none');
+                    loadingOverlay.classList.add('d-flex');
+
+                    // Wait 1000ms (1 second) to display the loading feature before submitting
+                    setTimeout(function () {
+                        loginForm.submit();
+                    }, 2000);
+                }
+            });
+        }
+
+        if (googleBtn) {
+            googleBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetUrl = this.getAttribute('href');
+
+                // Display loading overlay
+                loadingOverlay.classList.remove('d-none');
+                loadingOverlay.classList.add('d-flex');
+
+                // Wait 1000ms (1 second) before redirecting to Google OAuth
+                setTimeout(function () {
+                    window.location.href = targetUrl;
+                }, 1000);
+            });
         }
 
         @if(session('success'))

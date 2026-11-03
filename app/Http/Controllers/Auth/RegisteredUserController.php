@@ -44,8 +44,7 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(RouteServiceProvider::HOME);
+        // Redirect directly to the login page with a success message
+        return redirect()->route('login')->with('status', 'Account created successfully! Please log in.');
     }
 }
