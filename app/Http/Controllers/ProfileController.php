@@ -7,7 +7,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use RuntimeException;
 
 class ProfileController extends Controller
 {
@@ -26,13 +28,31 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $validated = $request->validated();
+        $photo = $request->file('profile_photo');
+        unset($validated['profile_photo']);
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user->fill($validated);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $oldPhotoPath = $user->profile_photo_path;
+        if ($photo) {
+            $photoPath = $photo->store('profile-photos', 'public');
+            if (!$photoPath) {
+                throw new RuntimeException('The profile photo could not be saved. Please try again.');
+            }
+            $user->profile_photo_path = $photoPath;
+        }
+
+        $user->save();
+
+        if ($photo && $oldPhotoPath) {
+            Storage::disk('public')->delete($oldPhotoPath);
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -47,10 +67,14 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+        $profilePhotoPath = $user->profile_photo_path;
 
         Auth::logout();
 
         $user->delete();
+        if ($profilePhotoPath) {
+            Storage::disk('public')->delete($profilePhotoPath);
+        }
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

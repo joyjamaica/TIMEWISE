@@ -30,4 +30,18 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI'),
+    ],
+
+    'ollama' => [
+        'url'     => env('OLLAMA_URL', 'http://localhost:11434'),
+        'model'   => env('OLLAMA_MODEL', 'gemma3:1b'),
+        'timeout' => (int) env('OLLAMA_TIMEOUT', 60),
+        'num_ctx' => (int) env('OLLAMA_NUM_CTX', 2048),
+        'token'   => env('OLLAMA_TOKEN'),
+    ],
+
 ];

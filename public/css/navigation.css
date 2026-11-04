@@ -1,0 +1,523 @@
+
+/* =========================================
+   TIMEWISE - SHARED LAYOUT & SIDEBAR
+========================================= */
+
+:root {
+    --tw-sidebar-w: 260px;
+
+    --tw-side-bg: #2b1f1a;
+    --tw-side-card: #3a2c26;
+    --tw-side-line: rgba(255, 255, 255, .08);
+
+    --tw-side-text: #d8c9ba;
+    --tw-side-muted: #9a8a7b;
+
+    --tw-side-peach: #f2cfa8;
+    --tw-side-clay: #c9805a;
+
+    --tw-page-bg: #fbf6ee;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* =========================================
+   BODY & MAIN CONTENT
+========================================= */
+
+.tw-app-body {
+    margin: 0;
+    background: var(--tw-page-bg);
+    color: #2f211c;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system,
+        'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.tw-app-body.nav-locked {
+    overflow: hidden;
+}
+
+.tw-app {
+    min-height: 100vh;
+}
+
+.tw-app-content {
+    margin-left: var(--tw-sidebar-w);
+    min-width: 0;
+    min-height: 100vh;
+
+    background-image:
+        linear-gradient(rgba(193, 141, 102, .06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(193, 141, 102, .06) 1px, transparent 1px);
+
+    background-size: 28px 28px;
+}
+
+/* =========================================
+   SIDEBAR
+========================================= */
+
+.tw-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 50;
+
+    width: var(--tw-sidebar-w);
+    height: 100vh;
+    height: 100dvh;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 24px 14px 16px;
+
+    background: var(--tw-side-bg);
+    color: var(--tw-side-text);
+
+    /* Prevent the entire sidebar from scrolling */
+    overflow: hidden;
+}
+
+/* =========================================
+   SIDEBAR HEADER & LOGO
+========================================= */
+
+.tw-sidebar-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 8px;
+    margin-bottom: 34px;
+
+    flex-shrink: 0;
+}
+
+.tw-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    color: #fff;
+    text-decoration: none;
+}
+
+.tw-brand-mark {
+    display: grid;
+    place-items: center;
+
+    width: 36px;
+    height: 36px;
+
+    border-radius: 11px;
+
+    background: var(--tw-side-peach);
+    color: #3a2a25;
+}
+
+.tw-brand-name {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -.02em;
+}
+
+.tw-sidebar-close {
+    display: none;
+
+    width: 34px;
+    height: 34px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: transparent;
+    color: var(--tw-side-text);
+
+    font-size: 26px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+/* =========================================
+   NAVIGATION LABEL
+========================================= */
+
+.tw-nav-label {
+    flex-shrink: 0;
+
+    margin: 0 0 10px 10px;
+
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+
+    color: var(--tw-side-muted);
+}
+
+/* =========================================
+   NAVIGATION LINKS
+   Only this section scrolls.
+========================================= */
+
+.tw-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    flex: 1 1 auto;
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,.15) transparent;
+}
+
+.tw-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.tw-nav::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,.15);
+    border-radius: 10px;
+}
+
+.tw-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    flex-shrink: 0;
+
+    padding: 12px 14px;
+    border-radius: 14px;
+
+    color: var(--tw-side-text);
+
+    font-size: 14px;
+    font-weight: 500;
+
+    text-decoration: none;
+
+    transition: background-color .15s ease, color .15s ease;
+}
+
+.tw-nav-link:hover {
+    background: rgba(255, 255, 255, .06);
+    color: #fff;
+}
+
+.tw-nav-link.is-active {
+    background: var(--tw-side-peach);
+    color: #3a2a25;
+    font-weight: 600;
+}
+
+.tw-nav-dot {
+    width: 6px;
+    height: 6px;
+
+    margin-left: auto;
+
+    border-radius: 50%;
+    background: var(--tw-side-clay);
+}
+
+.tw-nav-link.is-disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.tw-nav-link.is-disabled:hover {
+    background: transparent;
+    color: var(--tw-side-text);
+}
+
+.tw-nav-soon {
+    margin-left: auto;
+    padding: 2px 7px;
+
+    border-radius: 99px;
+
+    background: var(--tw-side-line);
+
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+/* =========================================
+   PROFILE SECTION
+   Stays at the bottom of the sidebar.
+========================================= */
+
+.tw-profile {
+    position: relative;
+
+    flex-shrink: 0;
+
+    margin-top: auto;
+    padding-top: 14px;
+
+    border-top: 1px solid var(--tw-side-line);
+}
+
+.tw-profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: 100%;
+    padding: 8px;
+
+    border: 0;
+    border-radius: 12px;
+
+    background: transparent;
+    color: inherit;
+
+    font: inherit;
+    text-align: left;
+
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color .15s ease;
+}
+
+.tw-profile-btn:hover {
+    background: rgba(255, 255, 255, .06);
+}
+
+.tw-profile-btn:focus-visible {
+    outline: 2px solid var(--tw-side-peach);
+    outline-offset: 2px;
+}
+
+.tw-avatar {
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+
+    flex-shrink: 0;
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 50%;
+
+    background: var(--tw-side-peach);
+    color: #3a2a25;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.tw-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tw-profile-text {
+    display: flex;
+    flex-direction: column;
+
+    flex: 1;
+    min-width: 0;
+}
+
+.tw-profile-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    color: #fff;
+}
+
+.tw-profile-sub {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    margin-top: 2px;
+
+    font-size: 11px;
+    color: var(--tw-side-muted);
+}
+
+/* =========================================
+   DIRECT LOGOUT BUTTON
+========================================= */
+
+.tw-profile form {
+    margin: 0;
+}
+
+.tw-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: 100%;
+    padding: 12px 14px;
+    margin-top: 8px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: transparent;
+    color: var(--tw-side-text);
+
+    font: inherit;
+    font-size: 14px;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition: background .2s ease, color .2s ease;
+}
+
+.tw-logout-btn:hover {
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+}
+
+.tw-logout-btn:focus-visible {
+    outline: 2px solid var(--tw-side-peach);
+    outline-offset: 2px;
+}
+
+/* =========================================
+   FOCUS STATES
+========================================= */
+
+.tw-nav-link:focus-visible,
+.tw-brand:focus-visible,
+.tw-topbar-btn:focus-visible,
+.tw-sidebar-close:focus-visible {
+    outline: 2px solid var(--tw-side-peach);
+    outline-offset: 2px;
+}
+
+/* =========================================
+   MOBILE TOP BAR & OVERLAY
+========================================= */
+
+.tw-topbar {
+    display: none;
+}
+
+.tw-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+
+    background: rgba(30, 20, 16, .55);
+}
+
+.tw-overlay[hidden] {
+    display: none;
+}
+
+/* =========================================
+   RESPONSIVE SIDEBAR
+========================================= */
+
+@media (max-width: 900px) {
+
+    .tw-app-content {
+        margin-left: 0;
+    }
+
+    .tw-topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        padding: 10px 14px;
+
+        background: var(--tw-page-bg);
+        border-bottom: 1px solid #ece2d2;
+    }
+
+    .tw-topbar-btn {
+        display: grid;
+        place-items: center;
+
+        width: 40px;
+        height: 40px;
+
+        border: 1px solid #ece2d2;
+        border-radius: 10px;
+
+        background: #fffdf9;
+        color: #3a2a25;
+
+        cursor: pointer;
+    }
+
+    .tw-topbar-brand {
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: -.02em;
+    }
+
+    .tw-sidebar {
+        transform: translateX(-100%);
+        transition: transform .22s ease;
+
+        box-shadow: none;
+    }
+
+    .tw-sidebar.is-open {
+        transform: translateX(0);
+
+        box-shadow: 8px 0 30px rgba(0, 0, 0, .3);
+    }
+
+    .tw-sidebar-close {
+        display: grid;
+        place-items: center;
+    }
+}
+
+/* Short screens: save space for the profile and logout */
+@media (max-height: 650px) {
+    .tw-sidebar {
+        padding-top: 16px;
+        padding-bottom: 10px;
+    }
+
+    .tw-sidebar-head {
+        margin-bottom: 18px;
+    }
+
+}
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .tw-sidebar,
+    .tw-nav-link,
+    .tw-logout-btn {
+        transition: none;
+    }
+}
