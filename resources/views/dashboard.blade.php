@@ -46,9 +46,8 @@
             </div>
             <p class="tw-dash-label">Tasks done</p>
             <p class="tw-dash-big">{{ $d['tasks']['done'] }}<span>/{{ $d['tasks']['total'] }}</span></p>
-            <div class="tw-dash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="{{ $d['tasks']['total'] }}" aria-valuenow="{{ $d['tasks']['done'] }}" aria-label="Tasks completed">
-                <div class="tw-dash-bar-fill" style="width: {{ round($d['tasks']['done'] / $d['tasks']['total'] * 100) }}%"></div>
-            </div>
+            <div class="tw-dash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="{{ $d['tasks']['total'] }}" ariavaluenow="{{ $d['tasks']['done'] }}" aria-label="Tasks completed">
+            <div class="tw-dash-bar-fill" style="width: {{ $d['tasks']['total'] > 0 ? round(($d['tasks']['done'] / $d['tasks']['total']) * 100) : 0 }}%"></div>
             <p class="tw-dash-note">Keep going, you're over halfway there</p>
         </article>
 
