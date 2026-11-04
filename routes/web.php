@@ -5,6 +5,7 @@ use App\Http\Controllers\MatrixController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PulseBotController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CalendarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,3 +70,14 @@ Route::middleware(['auth', 'verified'])->prefix('pulsebot')->name('pulsebot.')->
     Route::post('/send', [PulseBotController::class, 'send'])->middleware('throttle:10,1')->name('send');
     Route::post('/clear', [PulseBotController::class, 'clear'])->name('clear');
 });
+
+// Calendar Module
+Route::get('/calendar', [CalendarController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('calendar.index');
+
+Route::post('/calendar/organize',
+    [CalendarController::class, 'organize']
+)
+->middleware(['auth', 'verified'])
+->name('smart-student-calendar.organize');
