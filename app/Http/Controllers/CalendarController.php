@@ -5,13 +5,22 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class CalendarController extends Controller
 {
     
     public function index()
     {
-        return view('calendar');
+        $savedRecord = DB::table('calendar_schedules')
+            ->where('user_id', auth()->id())
+            ->first();
+
+        $savedSchedule = $savedRecord
+            ? json_decode($savedRecord->schedule, true)
+            : [];
+
+        return view('calendar', compact('savedSchedule'));
     }
 
 
@@ -145,9 +154,25 @@ class CalendarController extends Controller
             $schedule = is_string($text) ? json_decode($text, true) : null;
 
             if (!is_array($schedule) || !array_is_list($schedule)) {
-                return response()->json(['error' => 'Gemini returned an unexpected schedule format. Please try again.'], 502);
+                return response()->json([
+                    'error' => 'Gemini returned an unexpected schedule format. Please try again.'
+                ], 502);
             }
 
+            // SAVE ORGANIZED SCHEDULE TO DATABASE
+            DB::table('calendar_schedules')->updateOrInsert(
+                [
+                    'user_id' => $request->user()->id,
+                ],
+                [
+                    'week_start' => $weekStart,
+                    'schedule' => json_encode($schedule),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+
+            // Return organized schedule to JavaScript
             return response()->json($schedule);
         } catch (\Throwable $e) {
             Log::error('Gemini schedule request exception', ['message' => $e->getMessage()]);

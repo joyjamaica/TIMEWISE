@@ -210,7 +210,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
 
-            let schedule = [];
+            let schedule = @json($savedSchedule ?? []);
             let currentWeekStart = getMonday(new Date());
             let selectedFile = null;
             let autoBlockEnabled = true;
@@ -520,6 +520,19 @@
             }
 
             // Initial empty calendar render
+            // Load previously saved schedule
+            if (schedule.length > 0) {
+                document.getElementById('syncStatusDot').className =
+                    'w-1.5 h-1.5 rounded-full bg-[#8C9C86]';
+
+                document.getElementById('syncStatusText').textContent =
+                    'Saved schedule loaded';
+            } else {
+                document.getElementById('syncStatusText').textContent =
+                    'Waiting for import';
+            }
+
+            // Display calendar
             renderCalendar();
         });
     </script>
