@@ -6,6 +6,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
+        /* Calendar spacing: a full 18-hour canvas prevents class cards from being compressed. */
+        #calendarCanvas { min-width: 900px; }
+        #calendarCanvasBody { height: 1080px; min-height: 1080px; }
+        #weekHeaderColumns, #calendarGridDays { min-width: 840px; }
+        #weekHeaderColumns > div, #calendarGridDays > div { flex: 1 0 168px; min-width: 168px; }
+        #calendarGridDays > div { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(100% / 18 - 1px), #F2EFEA calc(100% / 18 - 1px), #F2EFEA calc(100% / 18)); }
+        .schedule-event-card { min-height: 58px; padding: 10px 11px !important; border-radius: 11px !important; }
+        .schedule-event-card h4 { font-size: 12px; line-height: 1.35; white-space: normal; overflow-wrap: anywhere; }
+        .schedule-event-card p { font-size: 10px; line-height: 1.35; margin-top: 5px; }
+        @media (max-width: 1023px) {
+            #calendarCanvas { min-width: 900px; }
+            #calendarPanel { overflow-x: auto; }
+        }
+        @media (max-width: 640px) {
+            #calendarPanel { border-radius: 20px; }
+            #calendarCanvasBody { height: 1000px; min-height: 1000px; }
+        }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #EAE3D9; border-radius: 10px; }
@@ -82,7 +99,8 @@
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             
             <!-- Left: Weekly Calendar (Takes 3 columns) -->
-            <div class="lg:col-span-3 bg-white border border-[#EAE3D9] rounded-3xl overflow-hidden shadow-sm flex flex-col h-[750px]">
+            <div id="calendarPanel" class="lg:col-span-3 bg-white border border-[#EAE3D9] rounded-3xl overflow-hidden shadow-sm flex flex-col min-h-[850px]">
+                <div id="calendarCanvas">
                 <!-- Calendar Header -->
                 <div class="flex border-b border-[#EAE3D9]">
                     <div class="w-16 shrink-0 flex items-center justify-center py-4">
@@ -94,11 +112,11 @@
                 </div>
 
                 <!-- Calendar Body -->
-                <div class="flex-1 flex overflow-y-auto relative">
+                <div id="calendarCanvasBody" class="flex-none flex relative">
                     <!-- Time Labels Column (8 AM to 10 PM -> 14 hours total) -->
                     <div class="w-16 shrink-0 border-r border-[#EAE3D9] relative bg-white z-10">
                         <?php 
-                        $hours = [5, 6, 7, 8, 10, 12, 14, 16, 18, 20, 22];
+                        $hours = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
                         foreach ($hours as $hour) {
                             $top = (($hour - 5) / 18) * 100;
                             $label = $hour > 12 ? ($hour - 12) . ' PM' : ($hour === 12 ? '12 PM' : $hour . ' AM');
@@ -111,7 +129,7 @@
                     <div class="absolute inset-0 left-16 right-0 pointer-events-none">
                         <?php 
                         foreach ($hours as $hour) {
-                            $top = (($hour - 8) / 14) * 100;
+                            $top = (($hour - 5) / 18) * 100;
                             echo '<div class="absolute w-full border-t border-[#F2EFEA]" style="top: ' . $top . '%;"></div>';
                         }
                         ?>
@@ -122,6 +140,7 @@
                         <!-- Populated via JS -->
                     </div>
                 </div>
+                </div><!-- /calendarCanvas -->
             </div>
 
             <!-- Right: Daily Agenda (Takes 1 column) -->
@@ -390,7 +409,7 @@
                 headerContainer.innerHTML = '';
                 workWeek.forEach((day) => {
                     const col = document.createElement('div');
-                    col.className = 'flex-1 py-4 text-center border-l border-[#EAE3D9]';
+                    col.className = 'py-4 text-center border-l border-[#EAE3D9]';
                     col.innerHTML = `<span class="text-xs font-bold text-[#2B2621]">${day.toLocaleDateString('en-US', { weekday: 'short' })} ${day.getDate()}</span>`;
                     headerContainer.appendChild(col);
                 });
@@ -401,7 +420,7 @@
 
                 workWeek.forEach((day) => {
                     const dayCol = document.createElement('div');
-                    dayCol.className = 'flex-1 border-r border-[#EAE3D9] last:border-r-0 relative';
+                    dayCol.className = 'border-r border-[#EAE3D9] last:border-r-0 relative';
 
                     const dayEvents = schedule.filter(e => new Date(e.startTime).toDateString() === day.toDateString());
                     
@@ -430,11 +449,12 @@
 
                         const eventCard = document.createElement('div');
                         eventCard.className =
-                        'absolute left-1 right-1 rounded-lg p-2 overflow-hidden ' +
-                        'shadow-sm transition-transform hover:scale-[1.02] ' +
+                        'schedule-event-card absolute left-2 right-2 rounded-xl p-3 overflow-hidden ' +
+                        'shadow-sm transition-shadow hover:shadow-md ' +
                         'cursor-default bg-[#EAD5C3] border border-[#D9C4B2]';
                         eventCard.style.top = `${topPercentage}%`;
                         eventCard.style.height = `${Math.max(heightPercentage, 5.5)}%`;
+                        eventCard.style.minHeight = '58px';
                         
                         eventCard.innerHTML = `
                             <h4 class="text-xs font-bold text-[#2B2621] leading-tight truncate">${event.subject || event.title}</h4>
