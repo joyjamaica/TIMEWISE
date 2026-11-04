@@ -13,8 +13,92 @@
 
     <!-- Custom Auth Stylesheet -->
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}?v=3.9">
+
+    <!-- Custom Cube Loading Animation Styles -->
+    <style>
+        /* Full-Screen Dark Translucent Overlay */
+        #loadingOverlay {
+            background-color: rgba(26, 18, 11, 0.85); /* Dark espresso theme backdrop */
+            backdrop-filter: blur(4px);
+            transition: opacity 0.3s ease-in-out;
+            z-index: 9999;
+        }
+
+        /* Circular Orbital Track Container */
+        .cube-loader-wrapper {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Faint Circular Orbit Line */
+        .cube-loader-wrapper::before {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border: 2px dashed rgba(213, 206, 163, 0.3); /* Taupe accent ring */
+            border-radius: 50%;
+        }
+
+        /* Rotating Orbit Frame */
+        .orbit-container {
+            width: 70px;
+            height: 70px;
+            position: absolute;
+            animation: orbitRotate 1.6s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+
+        /* The Cube moving in a circular path */
+        .moving-cube {
+            width: 20px;
+            height: 20px;
+            background-color: #d5cea3; /* Taupe accent color */
+            border-radius: 4px;
+            position: absolute;
+            top: -10px;
+            left: calc(50% - 10px);
+            box-shadow: 0 0 15px rgba(213, 206, 163, 0.8);
+            animation: cubeSelfSpin 1.6s ease-in-out infinite;
+        }
+
+        /* Keyframes for circular orbital motion */
+        @keyframes orbitRotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Keyframes for cube rotation and pulse scaling */
+        @keyframes cubeSelfSpin {
+            0%, 100% {
+                transform: rotate(0deg) scale(1);
+            }
+            50% {
+                transform: rotate(180deg) scale(1.25);
+                background-color: #3c2a21; /* Espresso highlight */
+                box-shadow: 0 0 20px rgba(213, 206, 163, 1);
+            }
+        }
+    </style>
 </head>
 <body>
+
+    <!-- Circular Cube Loading Overlay -->
+    <div id="loadingOverlay" class="d-none position-fixed top-0 start-0 w-100 h-100 flex-column align-items-center justify-content-center">
+        <div class="cube-loader-wrapper mb-3">
+            <div class="orbit-container">
+                <div class="moving-cube"></div>
+            </div>
+        </div>
+        <div class="text-light fw-semibold text-uppercase small tracking-wider">Creating Account...</div>
+    </div>
 
     <div class="container-fluid p-0 vh-100">
         <div class="row g-0 h-100">
@@ -158,7 +242,7 @@
                                 </div>
 
                                 <!-- Submit -->
-                                <button type="submit" class="btn btn-espresso w-100 py-2 fw-semibold text-uppercase">
+                                <button type="submit" id="submitBtn" class="btn btn-espresso w-100 py-2 fw-semibold text-uppercase">
                                     Create Account
                                 </button>
                             </form>
@@ -231,49 +315,66 @@
             });
         });
 
-        // Client-side password validation
+        let isSubmitting = false;
+
+        // Client-side password validation & delayed loading animation
         registerForm.addEventListener('submit', function (e) {
-            const password = passwordInput.value;
-            const confirmPassword = confirmPasswordInput.value;
-            const errors = [];
+            if (!isSubmitting) {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                const errors = [];
 
-            if (password.length < 8) {
-                errors.push('The password must be at least 8 characters.');
-            }
-
-            if (password !== confirmPassword) {
-                errors.push('The password confirmation does not match.');
-            }
-
-            if (errors.length > 0) {
-                e.preventDefault();
-
-                // Display errors safely
-                errorList.replaceChildren();
-
-                errors.forEach(function (message) {
-                    const errorMessage = document.createElement('div');
-                    errorMessage.className = 'py-1';
-                    errorMessage.textContent = message;
-                    errorList.appendChild(errorMessage);
-                });
-
-                errorBox.classList.remove('d-none');
-                errorBox.classList.add('d-flex');
-
-                if (password.length < 8 || password !== confirmPassword) {
-                    passwordGroup.style.borderColor = '#dc3545';
+                if (password.length < 8) {
+                    errors.push('The password must be at least 8 characters.');
                 }
 
                 if (password !== confirmPassword) {
-                    confirmPasswordGroup.style.borderColor = '#dc3545';
+                    errors.push('The password confirmation does not match.');
                 }
-            } else {
-                errorBox.classList.add('d-none');
-                errorBox.classList.remove('d-flex');
-                errorList.replaceChildren();
-                passwordGroup.style.borderColor = '';
-                confirmPasswordGroup.style.borderColor = '';
+
+                if (errors.length > 0) {
+                    e.preventDefault();
+
+                    // Display errors safely
+                    errorList.replaceChildren();
+
+                    errors.forEach(function (message) {
+                        const errorMessage = document.createElement('div');
+                        errorMessage.className = 'py-1';
+                        errorMessage.textContent = message;
+                        errorList.appendChild(errorMessage);
+                    });
+
+                    errorBox.classList.remove('d-none');
+                    errorBox.classList.add('d-flex');
+
+                    if (password.length < 8 || password !== confirmPassword) {
+                        passwordGroup.style.borderColor = '#dc3545';
+                    }
+
+                    if (password !== confirmPassword) {
+                        confirmPasswordGroup.style.borderColor = '#dc3545';
+                    }
+                } else {
+                    // Validation passed: Prevent immediate submit & trigger 1s loading overlay
+                    e.preventDefault();
+                    isSubmitting = true;
+
+                    const loadingOverlay = document.getElementById('loadingOverlay');
+                    loadingOverlay.classList.remove('d-none');
+                    loadingOverlay.classList.add('d-flex');
+
+                    errorBox.classList.add('d-none');
+                    errorBox.classList.remove('d-flex');
+                    errorList.replaceChildren();
+                    passwordGroup.style.borderColor = '';
+                    confirmPasswordGroup.style.borderColor = '';
+
+                    // Wait 1000ms (1 second) before submitting to backend
+                    setTimeout(function () {
+                        registerForm.submit();
+                    }, 1000);
+                }
             }
         });
     </script>
