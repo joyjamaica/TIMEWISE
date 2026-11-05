@@ -144,16 +144,16 @@
             </div>
 
             <!-- Right: Daily Agenda (Takes 1 column) -->
-            <div class="bg-white border border-[#EAE3D9] rounded-3xl p-8 shadow-sm h-[750px] overflow-y-auto flex flex-col">
-                <p id="agendaDayTitle" class="text-[10px] font-bold text-[#B28260] uppercase tracking-widest mb-2">THURSDAY 24</p>
-                <h2 class="text-2xl font-normal text-[#2B2621] tracking-tight mb-8">Daily agenda</h2>
-                
+            <div class="bg-[#2B211B] border border-[#49372B] rounded-3xl p-8 shadow-lg h-[750px] overflow-y-auto flex flex-col">
+                <p id="agendaDayTitle" class="text-[10px] font-bold text-[#E7B98F] uppercase tracking-widest mb-2">THURSDAY 24</p>
+                <h2 class="text-2xl font-semibold text-[#FFF9F2] tracking-tight mb-8">Daily agenda</h2>
+
                 <div class="relative flex-1">
-                    <div class="absolute left-[52px] top-2 bottom-2 w-px bg-[#EAE3D9]"></div>
+                    <div class="absolute left-[52px] top-2 bottom-2 w-px bg-[#604A3A]"></div>
                     <div id="agendaEventsList" class="flex flex-col gap-10">
                         <div class="text-center py-12 ml-6">
-                            <p class="text-sm font-semibold text-[#8C7A6B]">No schedule imported yet.</p>
-                            <p class="text-xs text-[#A89F93] mt-1">Click "Import Schedule" above to generate your calendar.</p>
+                            <p class="text-sm font-semibold text-[#F4E7DA]">No schedule imported yet.</p>
+                            <p class="text-xs text-[#C7B4A3] mt-1">Click "Import Schedule" above to generate your calendar.</p>
                         </div>
                     </div>
                 </div>
@@ -494,7 +494,7 @@
                 if (agendaEvents.length === 0) {
                     agendaList.innerHTML = `
                         <div class="text-center py-12 ml-6">
-                            <p class="text-sm font-semibold text-[#8C7A6B]">
+                            <p class="text-sm font-semibold text-[#F4E7DA]">
                                 No classes scheduled for this day.
                             </p>
                         </div>
@@ -513,12 +513,12 @@
                                     })}
                                 </span>
                             </div>
-                            <div class="shrink-0 w-4 h-4 rounded-full bg-white border-[3px] border-[#D6C1AE] shadow-sm relative mt-0.5 ml-[-3px]"></div>
+                            <div class="shrink-0 w-4 h-4 rounded-full bg-[#2B211B] border-[3px] border-[#E7B98F] shadow-sm relative mt-0.5 ml-[-3px]"></div>
                             <div class="flex-1 pb-1">
-                                <h4 class="text-sm font-bold text-[#2B2621]">
+                                <h4 class="text-sm font-bold text-[#FFF9F2]">
                                     ${event.subject || event.title}
                                 </h4>
-                                <p class="text-[11px] font-medium text-[#A89F93] mt-1">
+                                <p class="text-[11px] font-medium text-[#C7B4A3] mt-1">
                                     ${event.room ? `Room: ${event.room} • ` : ''}${getDurationMinutes(event.startTime, event.endTime)} mins
                                 </p>
                             </div>
