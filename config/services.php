@@ -43,5 +43,8 @@ return [
         'num_ctx' => (int) env('OLLAMA_NUM_CTX', 2048),
         'token'   => env('OLLAMA_TOKEN'),
     ],
+        'gemini' => [
+        'api_key' => env('GEMINI_API_KEY'),
+    ],
 
 ];
