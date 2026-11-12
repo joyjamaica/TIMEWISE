@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PulseBotController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\AnalyticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,3 +83,10 @@ Route::post('/calendar/organize',
 )
 ->middleware(['auth', 'verified'])
 ->name('smart-student-calendar.organize');
+
+// Analytics module
+Route::middleware(['auth', 'verified'])->prefix('analytics')->name('analytics.')->group(function () {
+    Route::get('/', [AnalyticsController::class, 'index'])->name('index');
+    Route::post('/focus/start', [AnalyticsController::class, 'startFocus'])->name('focus.start');
+    Route::post('/focus/stop', [AnalyticsController::class, 'stopFocus'])->name('focus.stop');
+});
