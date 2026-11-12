@@ -29,13 +29,7 @@
         ::-webkit-scrollbar-thumb:hover { background: #D6C1AE; }
     </style>
 </head>
-<body class="min-h-screen bg-[#FDFBF7] text-[#2B2621] relative overflow-x-hidden selection:bg-[#EAD5C3]">
-
-    <!-- Background Grid Pattern -->
-    <div 
-        class="fixed inset-0 pointer-events-none opacity-40 z-0"
-        style="background-image: linear-gradient(to right, #EBE4DA 1px, transparent 1px), linear-gradient(to bottom, #EBE4DA 1px, transparent 1px); background-size: 80px 80px;"
-    ></div>
+<body class="min-h-screen bg-transparent text-[#2B2621] relative overflow-x-hidden selection:bg-[#EAD5C3]">
 
     <div class="relative z-10 max-w-[1600px] mx-auto p-6 md:p-10">
         
