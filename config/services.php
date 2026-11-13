@@ -36,12 +36,11 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
-    'ollama' => [
-        'url'     => env('OLLAMA_URL', 'http://localhost:11434'),
-        'model'   => env('OLLAMA_MODEL', 'gemma3:1b'),
-        'timeout' => (int) env('OLLAMA_TIMEOUT', 60),
-        'num_ctx' => (int) env('OLLAMA_NUM_CTX', 2048),
-        'token'   => env('OLLAMA_TOKEN'),
+    'groq' => [
+        'api_key'  => env('GROQ_API_KEY'),
+        'base_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
+        'model'    => env('GROQ_MODEL', 'openai/gpt-oss-20b'),
+        'timeout'  => (int) env('GROQ_TIMEOUT', 120),
     ],
         'gemini' => [
         'api_key' => env('GEMINI_API_KEY'),
