@@ -27,7 +27,7 @@
              'active' => ['matrix*'],
         ],
         [
-            'label' => 'Calendar',
+            'label' => 'Scheduler',
             'icon' => 'calendar',
             'routes' => ['calendar.index', 'calendar'],
             'active' => ['calendar*'],
