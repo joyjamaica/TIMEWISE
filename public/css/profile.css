@@ -707,3 +707,9 @@
         transition: none;
     }
 }
+
+/* Ensure hidden profile elements stay hidden */
+.profile-photo-preview img[hidden],
+.profile-photo-preview span[hidden] {
+    display: none !important;
+}
