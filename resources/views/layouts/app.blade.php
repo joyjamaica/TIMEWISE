@@ -16,7 +16,8 @@
     <!-- Navigation Stylesheet -->
     <link rel="stylesheet" href="{{ asset('css/navigation.css') }}">
     <link rel="stylesheet" href="{{ asset('css/page-motion.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('css/timewise-tokens.css') }}">
+    
     {{-- Each page adds its own stylesheet here with @push('styles') --}}
     @stack('styles')
 </head>

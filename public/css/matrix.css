@@ -1,20 +1,23 @@
+/* TIMEWISE Task Matrix. Colors and font come from timewise-tokens.css. */
+@import url('timewise-tokens.css');
 
 .matrix-page {
-    --cream: #F9F3EA;
-    --sand: #F1E5D5;
-    --espresso: #2C221E;
-    --brown: #6C5142;
-    --terracotta: #A66E53;
-    --amber: #E4B381;
-    --muted: #8C7D73;
-    --border: rgba(166, 110, 83, .17);
+    --cream: var(--tw-bg);
+    --sand: var(--tw-peach-soft);
+    --espresso: var(--tw-ink);
+    --brown: var(--tw-brown);
+    --terracotta: var(--tw-clay);
+    --amber: var(--tw-peach);
+    --muted: var(--tw-muted);
+    --border: var(--tw-line);
 
     width: 100%;
-    max-width: 1200px;
-    margin: auto;
-    padding: 20px 24px;
+    max-width: none;
+    margin: 0;
+    padding: 20px clamp(16px, 2.5vw, 40px);
+    background: var(--tw-bg);
     color: var(--espresso);
-    font: 14px 'Plus Jakarta Sans', sans-serif;
+    font: 14px var(--tw-font);
     box-sizing: border-box;
 }
 
@@ -85,6 +88,16 @@
     height: 32px;
 }
 
+.matrix-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.matrix-header-actions .matrix-btn {
+    white-space: nowrap;
+}
+
 /* Headings and alerts */
 .section-heading {
     display: flex;
@@ -109,13 +122,13 @@
 }
 
 .matrix-alert--success {
-    background: #E9F2E8;
-    color: #426B48;
+    background: var(--tw-green-bg);
+    color: var(--tw-green);
 }
 
 .matrix-alert--error {
-    background: #F9E9E5;
-    color: #914E40;
+    background: var(--tw-red-bg);
+    color: var(--tw-red);
 }
 
 .matrix-alert ul {
@@ -129,7 +142,7 @@
     background: var(--sand);
     border: 1px solid var(--border);
     border-radius: 15px;
-    box-shadow: 0 4px 14px rgba(44, 34, 30, .04);
+    box-shadow: 0 2px 10px rgba(67, 48, 42, .05);
 }
 
 .matrix-form-card {
@@ -170,7 +183,7 @@
     padding: 8px 10px;
     border: 1px solid var(--border);
     border-radius: 8px;
-    background: #FFFEFC;
+    background: var(--tw-card);
     color: var(--espresso);
     outline: none;
     font-size: 12px;
@@ -185,12 +198,12 @@
 .matrix-page .form-field select:focus,
 .matrix-page .form-field textarea:focus {
     border-color: var(--terracotta);
-    box-shadow: 0 0 0 2px rgba(166, 110, 83, .1);
+    box-shadow: 0 0 0 2px rgba(193, 141, 102, .15);
 }
 
 .matrix-page .form-field input::placeholder,
 .matrix-page .form-field textarea::placeholder {
-    color: #AA9C91;
+    color: var(--muted);
 }
 
 .form-footer {
@@ -228,8 +241,8 @@
 }
 
 .matrix-btn--primary {
-    background: var(--espresso);
-    color: white;
+    background: var(--tw-brown);
+    color: #fff;
 }
 
 .matrix-btn--primary:hover {
@@ -242,15 +255,15 @@
 }
 
 .matrix-btn--complete {
-    background: #E6EFE2;
-    color: #426B48;
-    border: 1px solid #CDDFC7;
+    background: var(--tw-green-bg);
+    color: var(--tw-green);
+    border: 1px solid var(--tw-line);
 }
 
 .matrix-btn--complete.is-completed {
-    background: #F5E4DC;
-    color: #965B45;
-    border-color: #E9C9B8;
+    background: var(--tw-peach-soft);
+    color: var(--tw-brown);
+    border-color: var(--tw-peach);
 }
 
 /* Main layout */
@@ -274,7 +287,7 @@
     padding: 6px 10px;
     border: 1px solid var(--border);
     border-radius: 20px;
-    background: white;
+    background: #fff;
     color: var(--brown);
     font-size: 10px;
     font-weight: 800;
@@ -298,7 +311,7 @@
     overflow: hidden;
     border: 1px solid var(--border);
     border-radius: 10px;
-    background: white;
+    background: #fff;
 }
 
 .matrix-cell-header {
@@ -308,7 +321,7 @@
     align-items: center;
     gap: 4px;
     padding-bottom: 7px;
-    border-bottom: 1px solid #F0EAE3;
+    border-bottom: 1px solid var(--tw-line);
 }
 
 .cell-priority,
@@ -321,9 +334,9 @@
     text-transform: uppercase;
 }
 
-.cell-priority--high { color: #A65B45; }
-.cell-priority--medium { color: #AD8145; }
-.cell-priority--low { color: #71866C; }
+.cell-priority--high { color: var(--tw-red); }
+.cell-priority--medium { color: var(--tw-clay); }
+.cell-priority--low { color: var(--tw-green); }
 .cell-difficulty { color: var(--muted); }
 
 .matrix-cell-tasks {
@@ -338,7 +351,7 @@
 .matrix-empty {
     padding: 10px 2px;
     text-align: center;
-    color: #B5A79C;
+    color: var(--muted);
     font-size: 10px;
 }
 
@@ -350,7 +363,7 @@
     width: 100%;
     min-width: 0;
     padding: 7px;
-    border: 1px solid #EEE3D7;
+    border: 1px solid var(--tw-line);
     border-radius: 7px;
     background: var(--cream);
     color: var(--espresso);
@@ -362,7 +375,7 @@
 .matrix-task:hover,
 .matrix-task.is-active {
     border-color: var(--terracotta);
-    background: #F0DCCB;
+    background: var(--tw-peach-soft);
 }
 
 .matrix-task.is-completed {
@@ -420,9 +433,9 @@
     min-width: 0;
     padding: 18px;
     border-radius: 15px;
-    background: var(--espresso);
-    color: white;
-    box-shadow: 0 6px 18px rgba(44, 34, 30, .1);
+    background: var(--tw-brown-deep);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(67, 48, 42, .05);
 }
 
 .matrix-details .section-eyebrow,
@@ -432,11 +445,11 @@
 }
 
 .matrix-details .details-heading h2 {
-    color: white;
+    color: #fff;
 }
 
 .matrix-details .details-heading p {
-    color: #C6B8AC;
+    color: rgba(255, 255, 255, .6);
 }
 
 .details-heading {
@@ -458,7 +471,7 @@
     height: 40px;
     margin: 0 auto 10px;
     border-radius: 12px;
-    background: rgba(228, 179, 129, .13);
+    background: rgba(242, 207, 168, .15);
     color: var(--amber);
     font-size: 20px;
 }
@@ -471,7 +484,7 @@
 .details-empty p {
     max-width: 220px;
     margin: auto;
-    color: #C6B8AC;
+    color: rgba(255, 255, 255, .6);
     font-size: 11px;
     line-height: 1.6;
 }
@@ -494,14 +507,14 @@
 .matrix-details .form-field textarea {
     min-height: 34px;
     background: rgba(255, 255, 255, .08);
-    color: white;
+    color: #fff;
     border: 1px solid rgba(255, 255, 255, .16);
     font-size: 11px;
 }
 
 .matrix-details .form-field select option {
     color: var(--espresso);
-    background: white;
+    background: #fff;
 }
 
 .matrix-details .form-field input:focus,
@@ -516,7 +529,7 @@
 
 .matrix-details .form-field input::placeholder,
 .matrix-details .form-field textarea::placeholder {
-    color: #A89B90;
+    color: rgba(255, 255, 255, .5);
 }
 
 .details-form-row {
@@ -530,13 +543,13 @@
 }
 
 /* Responsive */
-@media (max-width: 1000px) {
+@media (max-width: 820px) {
     .matrix-content {
         grid-template-columns: 1fr;
     }
 }
 
-@media (max-width: 650px) {
+@media (max-width: 560px) {
     .matrix-page {
         padding: 16px 12px;
     }
@@ -561,8 +574,18 @@
 }
 
 @media (max-width: 450px) {
+    .matrix-header {
+        gap: 10px;
+    }
+
     .matrix-header h1 {
         font-size: 22px;
+    }
+
+    .matrix-header-actions {
+        flex-direction: column-reverse;
+        align-items: flex-end;
+        gap: 6px;
     }
 
     .matrix-form-grid,
@@ -620,26 +643,4 @@
     .form-footer .matrix-btn {
         width: 100%;
     }
-
-    .matrix-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.matrix-header-actions .matrix-btn {
-    white-space: nowrap;
-}
-
-@media (max-width: 450px) {
-    .matrix-header {
-        gap: 10px;
-    }
-
-    .matrix-header-actions {
-        flex-direction: column-reverse;
-        align-items: flex-end;
-        gap: 6px;
-    }
-}
 }
