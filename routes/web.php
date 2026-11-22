@@ -73,7 +73,12 @@ Route::middleware(['auth', 'verified'])->prefix('pulsebot')->name('pulsebot.')->
     Route::post('/clear', [PulseBotController::class, 'clear'])->name('clear');
 });
 
-// Calendar Module
+// Monthly Calendar View (shows task/event badges across the month)
+Route::get('/calendar/month', [MatrixController::class, 'calendar'])
+    ->middleware(['auth', 'verified'])
+    ->name('calendar.month.index');
+
+// Scheduler Module
 Route::get('/calendar', [CalendarController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('calendar.index');
@@ -83,6 +88,7 @@ Route::post('/calendar/organize',
 )
 ->middleware(['auth', 'verified'])
 ->name('smart-student-calendar.organize');
+
 
 // Analytics module
 Route::middleware(['auth', 'verified'])->prefix('analytics')->name('analytics.')->group(function () {

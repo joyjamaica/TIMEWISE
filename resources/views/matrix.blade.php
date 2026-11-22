@@ -1,8 +1,11 @@
-
 <x-app-layout>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('css/matrix.css') }}">
+
+@php
+    $defaultDueDate = now()->setTime(17, 0)->format('Y-m-d\TH:i');
+@endphp
 
 <div class="matrix-page">
 
@@ -15,11 +18,16 @@
         </div>
 
         <div class="matrix-header-actions">
+            @if (\Illuminate\Support\Facades\Route::has('calendar.month.index'))
+                <a href="{{ route('calendar.month.index') }}" class="matrix-btn" style="text-decoration: none;">
+                    Calendar View
+                </a>
+            @endif
+
             <button type="button" class="matrix-btn matrix-btn--primary"
                 onclick="toggleAddTask()">
                 <span>＋</span> Add Task
             </button>
-
         </div>
     </header>
 
@@ -70,7 +78,7 @@
                     <select id="taskPriority" name="priority" required>
                         <option value="High" {{ old('priority', 'Medium') === 'High' ? 'selected' : '' }}>High</option>
                         <option value="Medium" {{ old('priority', 'Medium') === 'Medium' ? 'selected' : '' }}>Medium</option>
-                        <option value="Low" {{ old('priority') === 'Low' ? 'selected' : '' }}>Low</option>
+                        <option value="Low" {{ old('priority', 'Medium') === 'Low' ? 'selected' : '' }}>Low</option>
                     </select>
                 </div>
 
@@ -102,7 +110,9 @@
                 <div class="form-field">
                     <label for="taskDueDate">Due Date</label>
                     <input type="datetime-local" id="taskDueDate"
-                        name="due_date" value="{{ old('due_date') }}">
+                        name="due_date"
+                        value="{{ old('due_date', $defaultDueDate) }}"
+                        required>
                 </div>
 
                 <div class="form-field">
@@ -115,7 +125,7 @@
             </div>
 
             <div class="form-footer">
-                <span>* Additional details are optional.</span>
+                <span>* Due date defaults to today at 5:00 PM; other extra details are optional.</span>
                 <button type="submit" class="matrix-btn matrix-btn--primary">
                     Save Task
                 </button>
@@ -191,7 +201,7 @@
                                     data-id="{{ $task->id }}"
                                     data-title="{{ $task->title }}"
                                     data-description="{{ $task->description ?? '' }}"
-                                    data-due="{{ $task->due_date ? \Illuminate\Support\Carbon::parse($task->due_date)->format('Y-m-d\TH:i') : '' }}"
+                                    data-due="{{ $task->due_date ? \Illuminate\Support\Carbon::parse($task->due_date)->format('Y-m-d\TH:i') : $defaultDueDate }}"
                                     data-reminder="{{ $task->reminder ?? '' }}"
                                     data-location="{{ $task->location ?? '' }}"
                                     data-priority="{{ $task->priority }}"
@@ -299,7 +309,7 @@
 
                 <div class="form-field">
                     <label for="editDueDate">Due Date</label>
-                    <input type="datetime-local" name="due_date" id="editDueDate">
+                    <input type="datetime-local" name="due_date" id="editDueDate" required>
                 </div>
 
                 <div class="form-field">
@@ -344,6 +354,7 @@
 <script>
     const updateUrlTemplate = @json(route('tasks.update', ['id' => '__TASK_ID__']));
     const completeUrlTemplate = @json(route('tasks.complete', ['id' => '__TASK_ID__']));
+    const defaultDueDate = @json($defaultDueDate);
 
     // Show or hide the Add Task form.
     function toggleAddTask() {
@@ -379,7 +390,7 @@
 
         document.getElementById('editTitle').value = title;
         document.getElementById('editDescription').value = description;
-        document.getElementById('editDueDate').value = due;
+        document.getElementById('editDueDate').value = due || defaultDueDate;
         document.getElementById('editReminder').value = reminder;
         document.getElementById('editLocation').value = location;
         document.getElementById('editPriority').value = priority;
