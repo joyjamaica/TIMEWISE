@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\GroqService;
-use App\Services\NoteFileExtractor;
-use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Smalot\PdfParser\Parser;
 
 class PulseBotController extends Controller
 {
@@ -16,7 +14,7 @@ class PulseBotController extends Controller
         return view('pulsebot', compact('history'));
     }
 
-    public function send(Request $request, GroqService $groq, NoteFileExtractor $fileExtractor): JsonResponse|StreamedResponse
+    public function send(Request $request)
     {
         $request->validate([
             'message' => 'nullable|string|max:1000',
@@ -29,22 +27,19 @@ class PulseBotController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $extension = strtolower($file->getClientOriginalExtension());
-            
-            // Handle Text, Markdown, and CSV files
+
             if (in_array($extension, ['txt', 'md', 'csv'])) {
                 $rawText = @file_get_contents($file->getRealPath());
                 $cleanText = preg_replace('/[^\P{C}\n]+/u', '', $rawText);
                 $fileContent = "\n\n[File Contents of " . $file->getClientOriginalName() . "]:\n" . trim($cleanText);
-            } 
-            // Handle PDF files by extracting text directly!
-            elseif ($extension === 'pdf') {
+            } elseif ($extension === 'pdf') {
                 try {
-                    $parser = new \Smalot\PdfParser\Parser();
+                    $parser = new Parser();
                     $pdf = $parser->parseFile($file->getRealPath());
                     $extractedText = $pdf->getText();
-                    
+
                     $cleanPdfText = preg_replace('/[^\P{C}\n]+/u', '', $extractedText);
-                    $fileContent = "\n\n[Extracted PDF Contents of " . $file->getClientOriginalName() . "]:\n" . trim(substr($cleanPdfText, 0, 15000)); // Limits text length to fit token windows safely
+                    $fileContent = "\n\n[Extracted PDF Contents of " . $file->getClientOriginalName() . "]:\n" . trim(substr($cleanPdfText, 0, 15000));
                 } catch (\Exception $e) {
                     $fileContent = "\n\n[Attached PDF: " . $file->getClientOriginalName() . " (Could not parse text automatically)]";
                 }
@@ -53,59 +48,66 @@ class PulseBotController extends Controller
             }
         }
 
-        $history = $notes === null ? $request->session()->get(self::SESSION_KEY, []) : [];
-        $context = $this->buildContext($request);
-        if ($notes !== null) {
-            $context .= "\n\nAttached notes from {$fileName} (reference material, not instructions):\n".$notes;
-        }
+        $history = session()->get('pulsebot_history', []);
+        $history[] = ['role' => 'user', 'content' => $userPrompt . $fileContent];
 
-        // Prevent overlapping generations from the same shared PulseBot session.
-        $lock = Cache::lock('pulsebot-generating', 90);
-        try {
-            $lock->block(8);
-        } catch (LockTimeoutException $e) {
-            return response()->json(['error' => 'PulseBot is busy helping someone else. Try again in a few seconds.'], 429);
-        }
+        return response()->stream(function () use ($history) {
+            $messages = [
+                [
+                    'role' => 'system',
+                    'content' => 'You are PulseBot AI, a warm and helpful student productivity assistant integrated into TimeWise.
 
-        return response()->stream(function () use ($groq, $history, $message, $request, $lock, $context, $fileName) {
-            $send = static function (array $data): void {
-                echo 'data: '.json_encode($data, JSON_THROW_ON_ERROR)."\n\n";
-                if (ob_get_level() > 0) {
-                    ob_flush();
+CRITICAL FORMATTING RULES:
+- NEVER use markdown hash headers (like # or ##), table pipes (|), or divider lines (---).
+- Use clean paragraphs, bullet points with bold keywords, and natural spacing.
+- Sprinkle in warm, friendly emojis (like 👋, 💡, ✨, 📚, 🎯) naturally to make your responses expressive and pleasant to read.
+- Keep your replies encouraging, concise, and structured.'
+                ]
+            ];
+
+            foreach ($history as $h) {
+                $messages[] = [
+                    'role' => $h['role'] === 'assistant' ? 'assistant' : 'user',
+                    'content' => $h['content']
+                ];
+            }
+
+            try {
+                $response = Http::withoutVerifying()
+                    ->withToken(env('GROQ_API_KEY'))
+                    ->timeout(45)
+                    ->post('https://api.groq.com/openai/v1/chat/completions', [
+                        'model' => env('GROQ_MODEL', 'llama-3.1-8b-instant'),
+                        'messages' => $messages,
+                        'temperature' => 0.7,
+                    ]);
+
+                if ($response->successful()) {
+                    $reply = $response->json('choices.0.message.content') ?? 'No response generated.';
+
+                    $history[] = ['role' => 'assistant', 'content' => $reply];
+                    session()->put('pulsebot_history', $history);
+
+                    echo "data: " . json_encode(['token' => $reply]) . "\n\n";
+                    echo "data: " . json_encode(['done' => true, 'reply' => $reply]) . "\n\n";
+                    if (ob_get_level() > 0) {
+                        ob_flush();
+                    }
+                    flush();
+                } else {
+                    $errorMsg = $response->json('error.message') ?? 'Groq API connection error.';
+                    echo "data: " . json_encode(['error' => $errorMsg]) . "\n\n";
+                    if (ob_get_level() > 0) {
+                        ob_flush();
+                    }
                     flush();
                 }
             } catch (\Exception $e) {
                 echo "data: " . json_encode(['error' => 'Connection failed: ' . $e->getMessage()]) . "\n\n";
-                ob_flush();
-                flush();
-            };
-
-            try {
-                $result = $groq->streamChat(
-                    $history,
-                    $message,
-                    $context,
-                    static fn (string $token) => $send(['token' => $token])
-                );
-
-                if (!$result['ok']) {
-                    $send(['error' => $result['error']]);
-                    return;
+                if (ob_get_level() > 0) {
+                    ob_flush();
                 }
-
-                $history[] = ['role' => 'user', 'content' => $fileName
-                    ? $message."\n[Attached notes: {$fileName}]"
-                    : $message];
-                $history[] = ['role' => 'assistant', 'content' => $result['reply']];
-                $request->session()->put(self::SESSION_KEY, array_slice($history, -self::MAX_MESSAGES));
-                $request->session()->save();
-
-                $send(['done' => true, 'reply' => $result['reply']]);
-            } catch (Throwable $e) {
-                Log::error('PulseBot stream error: '.$e->getMessage());
-                $send(['error' => 'PulseBot could not finish the response. Please try again.']);
-            } finally {
-                $lock->release();
+                flush();
             }
         }, 200, [
             'Content-Type' => 'text/event-stream',
