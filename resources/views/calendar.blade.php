@@ -1,4 +1,4 @@
-
+	@section('title', 'Scheduler')
 <x-app-layout>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -76,7 +76,7 @@
         <!-- Header -->
         <header class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
-                <p class="text-[11px] font-bold tracking-[0.15em] text-[#8C7A6B] uppercase mb-3">
+                <p class="text-[11px] font-bold tracking-[0.15em] text-[#c18d66] uppercase mb-3">
                     SMART SCHEDULE
                 </p>
 
