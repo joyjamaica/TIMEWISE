@@ -66,14 +66,19 @@ Route::middleware('auth')->group(function () {
     Route::patch('/tasks/{id}/complete', [MatrixController::class, 'toggleComplete'])->name('tasks.complete');
 });
 
-// PulseBot AI assistant
+// PulseBot AI assistant routes
 Route::middleware(['auth', 'verified'])->prefix('pulsebot')->name('pulsebot.')->group(function () {
     Route::get('/', [PulseBotController::class, 'index'])->name('index');
-    Route::post('/send', [PulseBotController::class, 'send'])->middleware('throttle:10,1')->name('send');
+    Route::post('/send', [PulseBotController::class, 'send'])->name('send');
     Route::post('/clear', [PulseBotController::class, 'clear'])->name('clear');
 });
 
-// Calendar Module
+// Monthly Calendar View (shows task/event badges across the month)
+Route::get('/calendar/month', [MatrixController::class, 'calendar'])
+    ->middleware(['auth', 'verified'])
+    ->name('calendar.month.index');
+
+// Scheduler Module
 Route::get('/calendar', [CalendarController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('calendar.index');
@@ -83,6 +88,7 @@ Route::post('/calendar/organize',
 )
 ->middleware(['auth', 'verified'])
 ->name('smart-student-calendar.organize');
+
 
 // Analytics module
 Route::middleware(['auth', 'verified'])->prefix('analytics')->name('analytics.')->group(function () {

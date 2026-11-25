@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +21,60 @@ class MatrixController extends Controller
         return view('matrix', compact('tasks'));
     }
 
-    // 2. Store a new task under the logged-in user's account
+    // 2. Display the Monthly Calendar View with task/event badges grouped by date
+    public function calendar(Request $request)
+    {
+        $year = (int) $request->query('year', now()->year);
+        $month = (int) $request->query('month', now()->month);
+
+        if ($month < 1) {
+            $month = 12;
+            $year--;
+        } elseif ($month > 12) {
+            $month = 1;
+            $year++;
+        }
+
+        $currentDate = Carbon::createFromDate($year, $month, 1);
+        $gridStart = $currentDate->copy()->startOfMonth()->startOfWeek(Carbon::SUNDAY);
+        $gridEnd = $currentDate->copy()->endOfMonth()->endOfWeek(Carbon::SATURDAY);
+
+        $tasks = DB::table('tasks')
+            ->where('user_id', Auth::id())
+            ->whereNotNull('due_date')
+            ->whereBetween('due_date', [
+                $gridStart->copy()->startOfDay()->toDateTimeString(),
+                $gridEnd->copy()->endOfDay()->toDateTimeString(),
+            ])
+            ->orderBy('due_date', 'asc')
+            ->get();
+
+        $tasksByDate = $tasks->groupBy(function ($task) {
+            return Carbon::parse($task->due_date)->format('Y-m-d');
+        });
+
+        $days = [];
+        $cursor = $gridStart->copy();
+        while ($cursor->lte($gridEnd)) {
+            $dateKey = $cursor->format('Y-m-d');
+            $days[] = [
+                'date' => $cursor->copy(),
+                'dateKey' => $dateKey,
+                'dayNumber' => $cursor->day,
+                'isCurrentMonth' => $cursor->month === $currentDate->month,
+                'isToday' => $cursor->isToday(),
+                'tasks' => $tasksByDate->get($dateKey, collect()),
+            ];
+            $cursor->addDay();
+        }
+
+        $prevMonth = $currentDate->copy()->subMonth();
+        $nextMonth = $currentDate->copy()->addMonth();
+
+        return view('calendar-month', compact('currentDate', 'days', 'prevMonth', 'nextMonth'));
+    }
+
+    // 3. Store a new task under the logged-in user's account
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -28,10 +82,12 @@ class MatrixController extends Controller
             'priority' => ['required', 'string', 'max:255'],
             'difficulty' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'due_date' => ['nullable', 'date'],
+            'due_date' => ['required', 'date'],
             'reminder' => ['nullable', 'string', 'max:255'],
             'location' => ['nullable', 'string', 'max:255'],
         ]);
+
+        $dueDate = Carbon::parse($validated['due_date'] ?? now()->setTime(17, 0))->toDateTimeString();
 
         DB::table('tasks')->insert([
             'user_id' => Auth::id(),
@@ -39,7 +95,7 @@ class MatrixController extends Controller
             'priority' => $validated['priority'],
             'difficulty' => $validated['difficulty'],
             'description' => $validated['description'] ?? null,
-            'due_date' => $validated['due_date'] ?? null,
+            'due_date' => $dueDate,
             'reminder' => $validated['reminder'] ?? null,
             'location' => $validated['location'] ?? null,
             'is_completed' => false,
@@ -50,7 +106,7 @@ class MatrixController extends Controller
         return redirect()->back();
     }
 
-    // 3. Update an existing task (only if it belongs to the user)
+    // 4. Update an existing task (only if it belongs to the user)
     public function update(Request $request, $id)
     {
         // Verify ownership before updating
@@ -61,10 +117,12 @@ class MatrixController extends Controller
             'priority' => ['required', 'string', 'max:255'],
             'difficulty' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'due_date' => ['nullable', 'date'],
+            'due_date' => ['required', 'date'],
             'reminder' => ['nullable', 'string', 'max:255'],
             'location' => ['nullable', 'string', 'max:255'],
         ]);
+
+        $dueDate = Carbon::parse($validated['due_date'] ?? now()->setTime(17, 0))->toDateTimeString();
 
         DB::table('tasks')
             ->where('id', $id)
@@ -74,7 +132,7 @@ class MatrixController extends Controller
                 'priority' => $validated['priority'],
                 'difficulty' => $validated['difficulty'],
                 'description' => $validated['description'] ?? null,
-                'due_date' => $validated['due_date'] ?? null,
+                'due_date' => $dueDate,
                 'reminder' => $validated['reminder'] ?? null,
                 'location' => $validated['location'] ?? null,
                 'updated_at' => now(),
@@ -83,7 +141,7 @@ class MatrixController extends Controller
         return redirect()->back();
     }
 
-    // 4. Toggle task completion (only if it belongs to the user)
+    // 5. Toggle task completion (only if it belongs to the user)
     public function toggleComplete($id)
     {
         $task = $this->findOwnedTask($id);
@@ -99,7 +157,7 @@ class MatrixController extends Controller
         return redirect()->back();
     }
 
-    // 5. Find a task owned by the logged-in user or return a 404
+    // 6. Find a task owned by the logged-in user or return a 404
     private function findOwnedTask($id)
     {
         $task = DB::table('tasks')
