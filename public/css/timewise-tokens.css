@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* TIMEWISE shared design tokens.
+   One palette and one font for every module (Dashboard, Task Matrix, Collaborate, PulseBot).
+   Load this file once in the main layout. Do not redefine these values in module stylesheets. */
+
+:root {
+    /* Surfaces */
+    --tw-bg: #fbf6ee;
+    --tw-card: #fffdf9;
+    --tw-line: #ece2d2;
+
+    /* Text */
+    --tw-ink: #2f211c;
+    --tw-muted: #8b7a6c;
+
+    /* Brand */
+    --tw-brown: #43302a;
+    --tw-brown-deep: #3a2a25;
+    --tw-clay: #c18d66;
+    --tw-peach: #f2cfa8;
+    --tw-peach-soft: #f7e6d2;
+
+    /* Status */
+    --tw-green-bg: #e3f0e1;
+    --tw-green: #4d7a50;
+    --tw-red-bg: #f9e0dc;
+    --tw-red: #b6523f;
+
+    /* Font */
+    --tw-font: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* Cream page background instead of plain white (any layout grid lines stay visible on top). */
+html, body { background-color: var(--tw-bg); }

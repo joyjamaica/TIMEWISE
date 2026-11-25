@@ -6,6 +6,8 @@ use App\Http\Controllers\MatrixController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PulseBotController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\AnalyticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,9 +66,33 @@ Route::middleware('auth')->group(function () {
     Route::patch('/tasks/{id}/complete', [MatrixController::class, 'toggleComplete'])->name('tasks.complete');
 });
 
-// PulseBot AI assistant
+// PulseBot AI assistant routes
 Route::middleware(['auth', 'verified'])->prefix('pulsebot')->name('pulsebot.')->group(function () {
     Route::get('/', [PulseBotController::class, 'index'])->name('index');
-    Route::post('/send', [PulseBotController::class, 'send'])->middleware('throttle:10,1')->name('send');
+    Route::post('/send', [PulseBotController::class, 'send'])->name('send');
     Route::post('/clear', [PulseBotController::class, 'clear'])->name('clear');
+});
+
+// Monthly Calendar View (shows task/event badges across the month)
+Route::get('/calendar/month', [MatrixController::class, 'calendar'])
+    ->middleware(['auth', 'verified'])
+    ->name('calendar.month.index');
+
+// Scheduler Module
+Route::get('/calendar', [CalendarController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('calendar.index');
+
+Route::post('/calendar/organize',
+    [CalendarController::class, 'organize']
+)
+->middleware(['auth', 'verified'])
+->name('smart-student-calendar.organize');
+
+
+// Analytics module
+Route::middleware(['auth', 'verified'])->prefix('analytics')->name('analytics.')->group(function () {
+    Route::get('/', [AnalyticsController::class, 'index'])->name('index');
+    Route::post('/focus/start', [AnalyticsController::class, 'startFocus'])->name('focus.start');
+    Route::post('/focus/stop', [AnalyticsController::class, 'stopFocus'])->name('focus.stop');
 });
