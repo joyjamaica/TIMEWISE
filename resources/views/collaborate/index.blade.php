@@ -1,5 +1,5 @@
+@section('title', 'Collaborate')
 <x-app-layout>
-
 <link rel="stylesheet" href="{{ asset('css/collaborate.css') }}">
 <div class="clb">
     <header class="clb-head">
