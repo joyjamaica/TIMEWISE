@@ -1,3 +1,4 @@
+@section('title', 'PulseBot')
 <x-app-layout>
 <link rel="stylesheet" href="{{ asset('css/pulsebot.css') }}">
 
