@@ -1,3 +1,4 @@
+@section('title', 'Analytics')
 <x-app-layout>
 <link rel="stylesheet" href="{{ asset('css/analytics.css') }}">
 <div class="analytics-page">
